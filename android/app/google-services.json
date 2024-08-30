@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "643851805513",
+    "project_id": "eurofinal",
+    "storage_bucket": "eurofinal.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:643851805513:android:4119b262cd2d63e1b5f098",
+        "android_client_info": {
+          "package_name": "com.mycompany.eurofarma"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA7d8xhVKTx4x_aC666bGbz5jKZPBjLv54"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
