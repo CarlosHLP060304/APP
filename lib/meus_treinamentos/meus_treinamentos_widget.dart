@@ -1,3 +1,6 @@
+import 'package:eurofarma/backend/schema/treinamentos_dto.dart';
+import 'package:eurofarma/backend/services/treinamento_service.dart';
+
 import '/backend/backend.dart';
 import '/flutter_flow/flutter_flow_autocomplete_options_list.dart';
 import '/flutter_flow/flutter_flow_icon_button.dart';
@@ -22,7 +25,11 @@ class MeusTreinamentosWidget extends StatefulWidget {
 }
 
 class _MeusTreinamentosWidgetState extends State<MeusTreinamentosWidget> {
+  
+  TreinamentoService treinamentoService = TreinamentoService();
   late MeusTreinamentosModel _model;
+  late Future<List<TreinamentosDTO>> treinamentos;
+  
 
   final scaffoldKey = GlobalKey<ScaffoldState>();
 
@@ -30,12 +37,12 @@ class _MeusTreinamentosWidgetState extends State<MeusTreinamentosWidget> {
   void initState() {
     super.initState();
     _model = createModel(context, () => MeusTreinamentosModel());
-
+     treinamentos =  treinamentoService.getAllTreinamentos();
     // On page load action.
-    SchedulerBinding.instance.addPostFrameCallback((_) async {
-      FFAppState().Pesquisa = false;
-      setState(() {});
-    });
+    // SchedulerBinding.instance.addPostFrameCallback((_) async {
+    //   FFAppState().Pesquisa = false;
+    //   setState(() {});
+    // });
 
     _model.textController ??= TextEditingController();
   }
@@ -50,12 +57,8 @@ class _MeusTreinamentosWidgetState extends State<MeusTreinamentosWidget> {
   @override
   Widget build(BuildContext context) {
     context.watch<FFAppState>();
-
-    return StreamBuilder<List<TreinamentosRecord>>(
-      stream: queryTreinamentosRecord(
-        queryBuilder: (treinamentosRecord) =>
-            treinamentosRecord.orderBy('data'),
-      ),
+    return FutureBuilder<List<TreinamentosDTO>>(
+      future: treinamentos,
       builder: (context, snapshot) {
         // Customize what your widget looks like when it's loading.
         if (!snapshot.hasData) {
@@ -74,7 +77,8 @@ class _MeusTreinamentosWidgetState extends State<MeusTreinamentosWidget> {
             ),
           );
         }
-        List<TreinamentosRecord> meusTreinamentosTreinamentosRecordList =
+
+        List<TreinamentosDTO> meusTreinamentosTreinamentosRecordList =
             snapshot.data!;
 
         return GestureDetector(
@@ -127,7 +131,7 @@ class _MeusTreinamentosWidgetState extends State<MeusTreinamentosWidget> {
                                     return const Iterable<String>.empty();
                                   }
                                   return meusTreinamentosTreinamentosRecordList
-                                      .map((e) => e.titulo)
+                                      .map((e) => e.nome)
                                       .toList()
                                       .where((option) {
                                     final lowercaseOption =
@@ -179,32 +183,32 @@ class _MeusTreinamentosWidgetState extends State<MeusTreinamentosWidget> {
                                     controller: textEditingController,
                                     focusNode: focusNode,
                                     onEditingComplete: onEditingComplete,
-                                    onChanged: (_) => EasyDebounce.debounce(
-                                      '_model.textController',
-                                      Duration(milliseconds: 2000),
-                                      () async {
-                                        safeSetState(() {
-                                          _model
-                                              .simpleSearchResults = TextSearch(
-                                            meusTreinamentosTreinamentosRecordList
-                                                .map(
-                                                  (record) =>
-                                                      TextSearchItem.fromTerms(
-                                                          record,
-                                                          [record.titulo!]),
-                                                )
-                                                .toList(),
-                                          )
-                                              .search(
-                                                  _model.textController.text)
-                                              .map((r) => r.object)
-                                              .toList();
-                                          ;
-                                        });
-                                        FFAppState().Pesquisa = true;
-                                        setState(() {});
-                                      },
-                                    ),
+                                     onChanged: (_) => EasyDebounce.debounce(
+                                       '_model.textController',
+                                       Duration(milliseconds: 2000),
+                                       () async {
+                                         safeSetState(() {
+                                           _model
+                                               .simpleSearchResults = TextSearch(
+                                                meusTreinamentosTreinamentosRecordList
+                                                 .map(
+                                                   (record) =>
+                                                       TextSearchItem.fromTerms(
+                                                           record,
+                                                           [record.nome!]),
+                                                 )
+                                                 .toList(),
+                                           )
+                                               .search(
+                                               _model.textController.text)
+                                               .map((r) => r.object)
+                                               .toList();
+                                           ;
+                                         });
+                                         FFAppState().Pesquisa = true;
+                                         setState(() {});
+                                       },
+                                     ),
                                     autofocus: false,
                                     obscureText: false,
                                     decoration: InputDecoration(
@@ -354,7 +358,7 @@ class _MeusTreinamentosWidgetState extends State<MeusTreinamentosWidget> {
                                       'descricaopage',
                                       queryParameters: {
                                         'referenciacidade': serializeParam(
-                                          treinamentosItem.reference,
+                                          treinamentosItem,
                                           ParamType.DocumentReference,
                                         ),
                                       }.withoutNulls,
@@ -393,7 +397,7 @@ class _MeusTreinamentosWidgetState extends State<MeusTreinamentosWidget> {
                                                       .fromSTEB(
                                                           16.0, 8.0, 0.0, 0.0),
                                                   child: Text(
-                                                    treinamentosItem.titulo,
+                                                    treinamentosItem.nome,
                                                     style: FlutterFlowTheme.of(
                                                             context)
                                                         .headlineSmall
@@ -419,7 +423,7 @@ class _MeusTreinamentosWidgetState extends State<MeusTreinamentosWidget> {
                                                                   15.0,
                                                                   0.0),
                                                       child: Text(
-                                                        'Sala : ${treinamentosItem.sala.toString()}',
+                                                        'Sala : ${400}',
                                                         style:
                                                             FlutterFlowTheme.of(
                                                                     context)
@@ -458,7 +462,7 @@ class _MeusTreinamentosWidgetState extends State<MeusTreinamentosWidget> {
                                                 child: Padding(
                                                   padding: EdgeInsets.all(10.0),
                                                   child: AutoSizeText(
-                                                    'Prof: ${treinamentosItem.professor}'
+                                                    'Prof: ${treinamentosItem.nomeProfessor}'
                                                         .maybeHandleOverflow(
                                                       maxChars: 70,
                                                       replacement: '…',
@@ -504,7 +508,7 @@ class _MeusTreinamentosWidgetState extends State<MeusTreinamentosWidget> {
                                                                   8.0),
                                                       child: Text(
                                                         treinamentosItem
-                                                            .horario,
+                                                            .dataInicio.toString(),
                                                         textAlign:
                                                             TextAlign.end,
                                                         style: FlutterFlowTheme
@@ -527,7 +531,7 @@ class _MeusTreinamentosWidgetState extends State<MeusTreinamentosWidget> {
                                                   ),
                                                 ),
                                                 Text(
-                                                  treinamentosItem.data,
+                                                  treinamentosItem.dataFim.toString(),
                                                   style: FlutterFlowTheme.of(
                                                           context)
                                                       .bodyMedium
@@ -579,7 +583,7 @@ class _MeusTreinamentosWidgetState extends State<MeusTreinamentosWidget> {
                                       'descricaopage',
                                       queryParameters: {
                                         'referenciacidade': serializeParam(
-                                          treinamentosItem.reference,
+                                          treinamentosItem,
                                           ParamType.DocumentReference,
                                         ),
                                       }.withoutNulls,
@@ -618,7 +622,7 @@ class _MeusTreinamentosWidgetState extends State<MeusTreinamentosWidget> {
                                                       .fromSTEB(
                                                           16.0, 8.0, 0.0, 0.0),
                                                   child: Text(
-                                                    treinamentosItem.titulo,
+                                                    treinamentosItem.nome,
                                                     style: FlutterFlowTheme.of(
                                                             context)
                                                         .headlineSmall
@@ -636,7 +640,7 @@ class _MeusTreinamentosWidgetState extends State<MeusTreinamentosWidget> {
                                                         AlignmentDirectional(
                                                             0.0, 0.0),
                                                     child: Text(
-                                                      'Sala :${treinamentosItem.sala.toString()}',
+                                                      'Sala :${404}',
                                                       style: FlutterFlowTheme
                                                               .of(context)
                                                           .bodyMedium
@@ -667,7 +671,7 @@ class _MeusTreinamentosWidgetState extends State<MeusTreinamentosWidget> {
                                                 child: Padding(
                                                   padding: EdgeInsets.all(10.0),
                                                   child: AutoSizeText(
-                                                    'Prof: ${treinamentosItem.professor}'
+                                                    'Prof: ${treinamentosItem.nomeProfessor}'
                                                         .maybeHandleOverflow(
                                                       maxChars: 70,
                                                       replacement: '…',
@@ -713,7 +717,7 @@ class _MeusTreinamentosWidgetState extends State<MeusTreinamentosWidget> {
                                                                   8.0),
                                                       child: Text(
                                                         treinamentosItem
-                                                            .horario,
+                                                            .dataInicio.toString(),
                                                         textAlign:
                                                             TextAlign.end,
                                                         style: FlutterFlowTheme

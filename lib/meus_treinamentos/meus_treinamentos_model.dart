@@ -1,3 +1,5 @@
+import 'package:eurofarma/backend/schema/treinamentos_dto.dart';
+
 import '/backend/backend.dart';
 import '/flutter_flow/flutter_flow_autocomplete_options_list.dart';
 import '/flutter_flow/flutter_flow_icon_button.dart';
@@ -23,7 +25,7 @@ class MeusTreinamentosModel extends FlutterFlowModel<MeusTreinamentosWidget> {
   TextEditingController? textController;
   String? textFieldSelectedOption;
   String? Function(BuildContext, String?)? textControllerValidator;
-  List<TreinamentosRecord> simpleSearchResults = [];
+  List<TreinamentosDTO> simpleSearchResults = [];
 
   @override
   void initState(BuildContext context) {}
